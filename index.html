@@ -618,7 +618,7 @@
   }, {threshold: 0.12});
   document.querySelectorAll('.reveal').forEach(el => revObserver.observe(el));
 
-  // --- stubbed email capture (no backend) ---
+  // --- email capture (Formspree) ---
   const btn = document.getElementById('signupBtn');
   const input = document.getElementById('emailInput');
   const msg = document.getElementById('formMsg');
@@ -630,11 +630,31 @@
       msg.textContent = '// that doesn\'t look like an email — try again';
       return;
     }
-    // STUB: no backend yet. Wire to Formspree/Tally later.
-    msg.style.color = '#6fcf8e';
-    msg.textContent = '// got it — you\'re on the list. (demo: not stored yet)';
-    input.value = '';
-    console.log('[stub] captured email:', v, '— wire to a backend before launch');
+    btn.disabled = true;
+    msg.style.color = 'var(--text-dim)';
+    msg.textContent = '// sending...';
+
+    fetch('https://formspree.io/f/REPLACE_WITH_FORM_ID', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: v, _subject: 'DashDiag signup: ' + v })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        msg.style.color = '#6fcf8e';
+        msg.textContent = '// you\'re on the list — one email when it ships.';
+        input.value = '';
+      } else {
+        msg.style.color = '#ef7565';
+        msg.textContent = '// something went wrong — try again or email andrei@keyorix.com';
+      }
+    })
+    .catch(() => {
+      msg.style.color = '#ef7565';
+      msg.textContent = '// network error — try again in a moment';
+    })
+    .finally(() => { btn.disabled = false; });
   }
   btn.addEventListener('click', submit);
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
