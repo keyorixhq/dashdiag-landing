@@ -631,10 +631,10 @@
       return;
     }
     btn.disabled = true;
-    msg.style.color = 'var(--text-dim)';
+    msg.style.color = 'var(--term-dim)';
     msg.textContent = '// sending...';
 
-    fetch('https://formspree.io/f/REPLACE_WITH_FORM_ID', {
+    fetch('https://formspree.io/f/xkoabqgb', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: v, _subject: 'DashDiag signup: ' + v })
