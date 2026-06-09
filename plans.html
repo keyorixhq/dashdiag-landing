@@ -99,7 +99,7 @@
 
   /* ---- tier grid ---- */
   .tiers {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px;
     padding: 44px 0 16px; align-items: start;
   }
   .tier {
@@ -253,6 +253,25 @@
     </form>
   </article>
 
+  <!-- self-hosted / enterprise — on-prem, air-gapped (ADR-0003); the provider/VMware buyer -->
+  <article class="tier">
+    <div class="audience">Provider / Enterprise</div>
+    <h2>Self-hosted</h2>
+    <div class="price">Let's talk<small> licence + support</small></div>
+    <p class="tagline">Run the whole thing inside your own network — including fully air-gapped. Your data never leaves; you hold the licence.</p>
+    <ul>
+      <li>On-prem dashboard &amp; history — your infrastructure</li>
+      <li>Air-gapped install — no outbound calls</li>
+      <li>Fleet across hundreds of hosts</li>
+      <li>Priority support &amp; SLAs</li>
+    </ul>
+    <form class="notify" data-tier="selfhosted">
+      <input type="email" placeholder="you@company.com" autocomplete="email" required>
+      <button type="submit">Talk to us about on-prem</button>
+      <div class="msg"></div>
+    </form>
+  </article>
+
 </section>
 
 <p class="foot-note">
@@ -307,6 +326,7 @@
           email: v,
           tier: tier,
           source: dsdSource(),
+          referrer: document.referrer || '',
           _subject: 'DashDiag Pro interest [' + tier + ']: ' + v
         })
       })
