@@ -374,6 +374,15 @@
     margin-top: 14px; font-family: var(--mono); font-size: 0.74rem;
     color: rgba(244,239,231,0.4); position: relative;
   }
+  .plans-link {
+    margin-top: 18px; font-size: 0.86rem;
+    color: rgba(244,239,231,0.6); position: relative;
+  }
+  .plans-link a {
+    color: var(--paper); font-weight: 500;
+    text-decoration: none; border-bottom: 1px solid rgba(196,80,42,0.6);
+  }
+  .plans-link a:hover { border-bottom-color: var(--accent); }
 
   /* ---- footer ---- */
   footer {
@@ -534,6 +543,7 @@
     </div>
     <div class="form-msg" id="formMsg"></div>
     <p class="form-hint">// No spam. One email when it ships. That's it.</p>
+    <p class="plans-link">Curious what Pro will cost? <a href="/plans" id="plansLink">See the plans →</a></p>
   </div>
 </section>
 
@@ -618,6 +628,19 @@
   }, {threshold: 0.12});
   document.querySelectorAll('.reveal').forEach(el => revObserver.observe(el));
 
+  // --- traffic-source attribution -------------------------------------------
+  // Capture ?utm_source from the landing URL and stash it for the session, so a
+  // signup that happens later (even after navigating to /plans, which drops the
+  // query string) still carries the community it came from. Every Formspree body
+  // includes source — it's how we learn which channel converts.
+  function dsdSource() {
+    try {
+      const u = new URLSearchParams(location.search).get('utm_source');
+      if (u) sessionStorage.setItem('dsd_src', u);
+      return sessionStorage.getItem('dsd_src') || u || 'direct';
+    } catch (e) { return 'direct'; }
+  }
+
   // --- email capture (Formspree) ---
   const btn = document.getElementById('signupBtn');
   const input = document.getElementById('emailInput');
@@ -637,7 +660,7 @@
     fetch('https://formspree.io/f/xkoabqgb', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: v, _subject: 'DashDiag signup: ' + v })
+      body: JSON.stringify({ email: v, source: dsdSource(), _subject: 'DashDiag signup: ' + v })
     })
     .then(r => r.json())
     .then(data => {
@@ -658,6 +681,14 @@
   }
   btn.addEventListener('click', submit);
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+
+  // Carry the traffic source onto the /plans link too, so attribution survives
+  // even where sessionStorage is blocked (some privacy modes).
+  (function () {
+    const pl = document.getElementById('plansLink');
+    const s = dsdSource();
+    if (pl && s && s !== 'direct') pl.href = '/plans?utm_source=' + encodeURIComponent(s);
+  })();
 </script>
 
 </body>
