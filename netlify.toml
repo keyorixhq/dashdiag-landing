@@ -9,6 +9,16 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://formspree.io; img-src 'self' data:; font-src 'self'"
 
+# Serve the real, always-current installer at the branded URL the homepage
+# advertises (`curl -fsSL https://dashdiag.sh/install.sh | sh`). MUST come before
+# the catch-all below, or the SPA rule serves index.html for /install.sh and the
+# one-liner pipes HTML into sh. status=200 = proxy (URL stays dashdiag.sh).
+[[redirects]]
+  from = "/install.sh"
+  to = "https://raw.githubusercontent.com/keyorixhq/dashdiag/main/install.sh"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
