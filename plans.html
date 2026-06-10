@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DashDiag — Pro plans</title>
+<meta name="description" content="Where DashDiag Pro is headed: shareable client reports, hosted history and alerts, and a team fleet dashboard. Prices are indicative — tell us which tier fits.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Spline+Sans+Mono:wght@400;500;600&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #14110d;
+    --ink-soft: #4a4540;
+    --ink-faint: #8a837a;
+    --paper: #f4efe7;
+    --paper-warm: #efe8dc;
+    --line: #d9d0c2;
+    --accent: #c4502a;
+    --accent-deep: #9c3a1c;
+    --ok: #2f7d4f;
+    --term-bg: #1b1814;
+    --term-text: #d8cfc0;
+    --term-dim: #7d756a;
+    --display: 'Fraunces', Georgia, serif;
+    --body: 'Spline Sans', system-ui, sans-serif;
+    --mono: 'Spline Sans Mono', ui-monospace, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--body);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(196,80,42,0.04), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(47,125,79,0.04), transparent 45%);
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 2; }
+  code {
+    font-family: var(--mono); font-size: 0.9em;
+    background: rgba(196,80,42,0.08); color: var(--accent-deep);
+    padding: 1px 5px; border-radius: 4px;
+  }
+
+  /* ---- nav ---- */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 26px 28px; max-width: 1080px; margin: 0 auto;
+    position: relative; z-index: 3;
+  }
+  .brand {
+    font-family: var(--display); font-weight: 600; font-size: 1.3rem;
+    letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 9px;
+    color: var(--ink); text-decoration: none;
+  }
+  .brand .dot { color: var(--accent); }
+  .brand .by {
+    font-family: var(--body); font-weight: 400; font-size: 0.72rem;
+    color: var(--ink-faint); letter-spacing: 0.02em;
+  }
+  .nav-back {
+    font-family: var(--mono); font-size: 0.82rem; color: var(--ink-soft);
+    text-decoration: none; border-bottom: 1px solid transparent;
+  }
+  .nav-back:hover { border-bottom-color: var(--accent); color: var(--ink); }
+
+  /* ---- header ---- */
+  .head { padding: 48px 0 12px; text-align: center; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+  }
+  .head h1 {
+    font-family: var(--display); font-weight: 600;
+    font-size: clamp(2rem, 4.6vw, 3.1rem); line-height: 1.08;
+    letter-spacing: -0.02em; margin-bottom: 18px;
+  }
+  .head .lede {
+    max-width: 620px; margin: 0 auto; color: var(--ink-soft); font-size: 1.06rem;
+  }
+  .head .free-note {
+    margin: 22px auto 0; max-width: 620px;
+    font-family: var(--mono); font-size: 0.8rem; color: var(--ink-faint);
+  }
+  .head .free-note b { color: var(--ink); font-weight: 600; }
+
+  /* ---- tier grid ---- */
+  .tiers {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px;
+    padding: 44px 0 16px; align-items: start;
+  }
+  .tier {
+    background: var(--paper-warm); border: 1px solid var(--line);
+    border-radius: 14px; padding: 28px 24px 26px;
+    display: flex; flex-direction: column; gap: 14px;
+    position: relative;
+  }
+  .tier.featured { border-color: var(--accent); box-shadow: 0 10px 30px rgba(196,80,42,0.10); }
+  .tier .ribbon {
+    position: absolute; top: -11px; left: 24px;
+    background: var(--accent); color: #fff; font-family: var(--mono);
+    font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 6px;
+  }
+  .tier .audience {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .tier h2 {
+    font-family: var(--display); font-weight: 600; font-size: 1.42rem;
+    letter-spacing: -0.01em;
+  }
+  .tier .price { font-family: var(--display); font-size: 1.9rem; font-weight: 600; }
+  .tier .price small { font-family: var(--body); font-size: 0.86rem; color: var(--ink-faint); font-weight: 400; }
+  .tier .tagline { color: var(--ink-soft); font-size: 0.96rem; min-height: 2.8em; }
+  .tier ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .tier li {
+    font-size: 0.9rem; color: var(--ink-soft); padding-left: 22px; position: relative;
+  }
+  .tier li::before {
+    content: "▸"; position: absolute; left: 0; color: var(--accent); font-size: 0.8rem;
+  }
+
+  /* ---- per-tier notify form ---- */
+  .notify { margin-top: 6px; display: flex; flex-direction: column; gap: 8px; }
+  .notify input {
+    width: 100%; padding: 11px 13px; border: 1px solid var(--line);
+    border-radius: 8px; font-family: var(--mono); font-size: 0.85rem;
+    background: #fff; color: var(--ink);
+  }
+  .notify input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+  .notify button {
+    padding: 11px 14px; border: none; border-radius: 8px; cursor: pointer;
+    background: var(--ink); color: var(--paper);
+    font-family: var(--body); font-weight: 600; font-size: 0.9rem;
+    transition: background 0.15s;
+  }
+  .tier.featured .notify button { background: var(--accent); }
+  .notify button:hover { background: var(--accent-deep); }
+  .notify button:disabled { opacity: 0.6; cursor: default; }
+  .notify .msg { font-family: var(--mono); font-size: 0.74rem; min-height: 1.1em; color: var(--ink-faint); }
+
+  .foot-note {
+    text-align: center; padding: 14px 0 56px; color: var(--ink-faint);
+    font-family: var(--mono); font-size: 0.78rem;
+  }
+  .foot-note a { color: var(--ink-soft); }
+
+  footer {
+    padding: 36px 0 60px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px; font-size: 0.82rem; color: var(--ink-faint);
+  }
+  footer a { color: var(--ink-soft); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  @media (max-width: 820px) {
+    .tiers { grid-template-columns: 1fr; max-width: 460px; margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="/">dashdiag<span class="dot">.</span> <span class="by">part of Keyorix</span></a>
+  <a class="nav-back" href="/">← back to home</a>
+</nav>
+
+<header class="head wrap">
+  <div class="eyebrow">// where Pro is headed</div>
+  <h1>Pick the tier that fits how you work.</h1>
+  <p class="lede">
+    The <code>dsd</code> CLI is free and stays free. Pro adds the things you can't do from one
+    terminal — sharing a verdict, keeping its history, watching a fleet. None of it has shipped
+    yet, so prices below are indicative.
+  </p>
+  <p class="free-note">
+    Leave your email on the tier that matches your job. <b>That's the signal we build against</b> —
+    it tells us which one to ship first, and you'll be first in line when it does.
+  </p>
+</header>
+
+<section class="tiers wrap">
+
+  <!-- operator / homelab — lowest price, broad base -->
+  <article class="tier">
+    <div class="audience">Operator</div>
+    <h2>History &amp; alerts</h2>
+    <div class="price">~€5<small>/mo</small></div>
+    <p class="tagline">Your boxes report in on their own. You get told when something turns, not when you remember to look.</p>
+    <ul>
+      <li>Scheduled <code>dsd health</code> with kept history</li>
+      <li>Email/webhook alert when a check flips to WARN/CRIT</li>
+      <li>Trend view — "disk has been creeping for 9 days"</li>
+      <li>Up to a handful of hosts</li>
+    </ul>
+    <form class="notify" data-tier="operator">
+      <input type="email" placeholder="you@example.com" autocomplete="email" required>
+      <button type="submit">Notify me about this</button>
+      <div class="msg"></div>
+    </form>
+  </article>
+
+  <!-- consultant / MSP — featured, highest WTP -->
+  <article class="tier featured">
+    <div class="ribbon">most asked for</div>
+    <div class="audience">Consultant / MSP</div>
+    <h2>Shareable client reports</h2>
+    <div class="price">~€15<small>/mo</small></div>
+    <p class="tagline">Run a diagnosis, hand the client a clean branded verdict they can read — not a wall of terminal output.</p>
+    <ul>
+      <li>One command → a shareable hosted report link</li>
+      <li>Branded PDF / web export for the client</li>
+      <li>History per client box, so you can show progress</li>
+      <li>Everything in Operator</li>
+    </ul>
+    <form class="notify" data-tier="consultant">
+      <input type="email" placeholder="you@example.com" autocomplete="email" required>
+      <button type="submit">Notify me about this</button>
+      <div class="msg"></div>
+    </form>
+  </article>
+
+  <!-- team / fleet — annual -->
+  <article class="tier">
+    <div class="audience">Team</div>
+    <h2>Fleet dashboard</h2>
+    <div class="price">€79<small>/yr</small></div>
+    <p class="tagline">One screen for every server the team runs. The red ones float to the top; everyone sees the same picture.</p>
+    <ul>
+      <li>All hosts on one verdict dashboard</li>
+      <li>Shared access for the whole team</li>
+      <li>Fleet-wide history &amp; alerting</li>
+      <li>Everything in Consultant</li>
+    </ul>
+    <form class="notify" data-tier="team">
+      <input type="email" placeholder="you@example.com" autocomplete="email" required>
+      <button type="submit">Notify me about this</button>
+      <div class="msg"></div>
+    </form>
+  </article>
+
+  <!-- self-hosted / enterprise — on-prem, air-gapped (ADR-0003); the provider/VMware buyer -->
+  <article class="tier">
+    <div class="audience">Provider / Enterprise</div>
+    <h2>Self-hosted</h2>
+    <div class="price">Let's talk<small> licence + support</small></div>
+    <p class="tagline">Run the whole thing inside your own network — including fully air-gapped. Your data never leaves; you hold the licence.</p>
+    <ul>
+      <li>On-prem dashboard &amp; history — your infrastructure</li>
+      <li>Air-gapped install — no outbound calls</li>
+      <li>Fleet across hundreds of hosts</li>
+      <li>Priority support &amp; SLAs</li>
+    </ul>
+    <form class="notify" data-tier="selfhosted">
+      <input type="email" placeholder="you@company.com" autocomplete="email" required>
+      <button type="submit">Talk to us about on-prem</button>
+      <div class="msg"></div>
+    </form>
+  </article>
+
+</section>
+
+<p class="foot-note">
+  Not sure which? Just <a href="/#access">leave your email on the home page</a> for general updates.
+</p>
+
+<footer class="wrap">
+  <div>dashdiag<span style="color:var(--accent)">.</span> · part of Keyorix</div>
+  <div>
+    <a href="/">Home</a> ·
+    <a href="https://github.com/keyorixhq/dashdiag">GitHub</a> ·
+    <span>© 2026 Keyorix SL · Zaragoza, España</span>
+  </div>
+</footer>
+
+<script>
+  // Resolve the traffic source: prefer this page's ?utm_source, then the one the
+  // home page stashed in sessionStorage, else "direct". This is how a tier signup
+  // gets joined to the community the visitor arrived from.
+  function dsdSource() {
+    try {
+      const u = new URLSearchParams(location.search).get('utm_source');
+      if (u) sessionStorage.setItem('dsd_src', u);
+      return sessionStorage.getItem('dsd_src') || u || 'direct';
+    } catch (e) { return 'direct'; }
+  }
+
+  const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+  document.querySelectorAll('form.notify').forEach(function (form) {
+    const tier = form.getAttribute('data-tier');
+    const input = form.querySelector('input');
+    const button = form.querySelector('button');
+    const msg = form.querySelector('.msg');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const v = input.value.trim();
+      if (!EMAIL_RE.test(v)) {
+        msg.style.color = '#c4392a';
+        msg.textContent = "// that doesn't look like an email";
+        return;
+      }
+      button.disabled = true;
+      msg.style.color = 'var(--ink-faint)';
+      msg.textContent = '// sending...';
+
+      fetch('https://formspree.io/f/xkoabqgb', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: v,
+          tier: tier,
+          source: dsdSource(),
+          referrer: document.referrer || '',
+          _subject: 'DashDiag Pro interest [' + tier + ']: ' + v
+        })
+      })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.ok) {
+          msg.style.color = '#2f7d4f';
+          msg.textContent = "// got it — you're first in line for this one.";
+          input.value = '';
+        } else {
+          msg.style.color = '#c4392a';
+          msg.textContent = '// something went wrong — try again or email andrei@keyorix.com';
+        }
+      })
+      .catch(function () {
+        msg.style.color = '#c4392a';
+        msg.textContent = '// network error — try again in a moment';
+      })
+      .finally(function () { button.disabled = false; });
+    });
+  });
+</script>
+
+</body>
+</html>

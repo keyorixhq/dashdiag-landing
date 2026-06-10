@@ -374,6 +374,30 @@
     margin-top: 14px; font-family: var(--mono); font-size: 0.74rem;
     color: rgba(244,239,231,0.4); position: relative;
   }
+  .plans-link {
+    margin-top: 18px; font-size: 0.86rem;
+    color: rgba(244,239,231,0.6); position: relative;
+  }
+  .plans-link a {
+    color: var(--paper); font-weight: 500;
+    text-decoration: none; border-bottom: 1px solid rgba(196,80,42,0.6);
+  }
+  .plans-link a:hover { border-bottom-color: var(--accent); }
+
+  /* ---- optional post-submit willingness-to-pay question (ADR-0002 D3) ---- */
+  .wtp { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(244,239,231,0.12); }
+  .wtp-q { font-size: 0.9rem; color: var(--paper); margin-bottom: 12px; }
+  .wtp-opts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .wtp-opts button {
+    padding: 8px 13px; border-radius: 6px; cursor: pointer;
+    border: 1px solid rgba(244,239,231,0.25); background: transparent;
+    color: var(--paper); font-family: var(--body); font-size: 0.82rem;
+    transition: all 0.15s;
+  }
+  .wtp-opts button:hover { border-color: var(--accent); background: rgba(196,80,42,0.15); }
+  .wtp-opts button:disabled { opacity: 0.55; cursor: default; }
+  .wtp-opts button.picked { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .wtp-msg { font-family: var(--mono); font-size: 0.74rem; color: rgba(244,239,231,0.6); min-height: 1em; margin-top: 10px; }
 
   /* ---- footer ---- */
   footer {
@@ -533,7 +557,18 @@
       <button id="signupBtn">Notify me</button>
     </div>
     <div class="form-msg" id="formMsg"></div>
+    <div class="wtp" id="wtpBlock" hidden>
+      <p class="wtp-q">One quick thing — which would you actually pay for? <span style="opacity:.6">(optional)</span></p>
+      <div class="wtp-opts">
+        <button type="button" data-tier="consultant">Shareable client reports</button>
+        <button type="button" data-tier="operator">Hosted history &amp; alerts</button>
+        <button type="button" data-tier="team">Team fleet dashboard</button>
+        <button type="button" data-tier="selfhosted">Self-hosted / on-prem</button>
+      </div>
+      <div class="wtp-msg" id="wtpMsg"></div>
+    </div>
     <p class="form-hint">// No spam. One email when it ships. That's it.</p>
+    <p class="plans-link">Curious what Pro will cost? <a href="/plans" id="plansLink">See the plans →</a></p>
   </div>
 </section>
 
@@ -618,6 +653,19 @@
   }, {threshold: 0.12});
   document.querySelectorAll('.reveal').forEach(el => revObserver.observe(el));
 
+  // --- traffic-source attribution -------------------------------------------
+  // Capture ?utm_source from the landing URL and stash it for the session, so a
+  // signup that happens later (even after navigating to /plans, which drops the
+  // query string) still carries the community it came from. Every Formspree body
+  // includes source — it's how we learn which channel converts.
+  function dsdSource() {
+    try {
+      const u = new URLSearchParams(location.search).get('utm_source');
+      if (u) sessionStorage.setItem('dsd_src', u);
+      return sessionStorage.getItem('dsd_src') || u || 'direct';
+    } catch (e) { return 'direct'; }
+  }
+
   // --- email capture (Formspree) ---
   const btn = document.getElementById('signupBtn');
   const input = document.getElementById('emailInput');
@@ -637,14 +685,16 @@
     fetch('https://formspree.io/f/xkoabqgb', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: v, _subject: 'DashDiag signup: ' + v })
+      body: JSON.stringify({ email: v, source: dsdSource(), referrer: document.referrer || '', _subject: 'DashDiag signup: ' + v })
     })
     .then(r => r.json())
     .then(data => {
       if (data.ok) {
         msg.style.color = '#6fcf8e';
         msg.textContent = '// you\'re on the list — one email when it ships.';
+        lastSignupEmail = v;
         input.value = '';
+        revealWTP();
       } else {
         msg.style.color = '#ef7565';
         msg.textContent = '// something went wrong — try again or email andrei@keyorix.com';
@@ -658,6 +708,36 @@
   }
   btn.addEventListener('click', submit);
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+
+  // Optional post-submit willingness-to-pay capture (ADR-0002 D3): revealed ONLY
+  // after a successful signup, so a non-answer never touches the conversion path.
+  let lastSignupEmail = '';
+  function revealWTP() { const b = document.getElementById('wtpBlock'); if (b) b.hidden = false; }
+  document.querySelectorAll('#wtpBlock .wtp-opts button').forEach((b) => {
+    b.addEventListener('click', () => {
+      const tier = b.getAttribute('data-tier');
+      const wmsg = document.getElementById('wtpMsg');
+      b.classList.add('picked');
+      document.querySelectorAll('#wtpBlock .wtp-opts button').forEach((x) => { x.disabled = true; });
+      fetch('https://formspree.io/f/xkoabqgb', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: lastSignupEmail, wtp_tier: tier, source: dsdSource(),
+          referrer: document.referrer || '', _subject: 'DashDiag WTP [' + tier + ']: ' + lastSignupEmail
+        })
+      }).then(() => { if (wmsg) wmsg.textContent = "// noted — that's what we'll build first. thank you."; })
+        .catch(() => { if (wmsg) wmsg.textContent = '// (could not record, but thanks)'; });
+    });
+  });
+
+  // Carry the traffic source onto the /plans link too, so attribution survives
+  // even where sessionStorage is blocked (some privacy modes).
+  (function () {
+    const pl = document.getElementById('plansLink');
+    const s = dsdSource();
+    if (pl && s && s !== 'direct') pl.href = '/plans?utm_source=' + encodeURIComponent(s);
+  })();
 </script>
 
 </body>
