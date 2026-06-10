@@ -386,11 +386,16 @@
 
   /* ---- optional post-submit willingness-to-pay question (ADR-0002 D3) ---- */
   .wtp { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(244,239,231,0.12); }
+  .wtp[data-revealed] { animation: wtpReveal 0.5s ease both; }
+  @keyframes wtpReveal {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
   .wtp-q { font-size: 0.9rem; color: var(--paper); margin-bottom: 12px; }
   .wtp-opts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
   .wtp-opts button {
     padding: 8px 13px; border-radius: 6px; cursor: pointer;
-    border: 1px solid rgba(244,239,231,0.25); background: transparent;
+    border: 1px solid rgba(244,239,231,0.4); background: transparent;
     color: var(--paper); font-family: var(--body); font-size: 0.82rem;
     transition: all 0.15s;
   }
@@ -712,7 +717,7 @@
   // Optional post-submit willingness-to-pay capture (ADR-0002 D3): revealed ONLY
   // after a successful signup, so a non-answer never touches the conversion path.
   let lastSignupEmail = '';
-  function revealWTP() { const b = document.getElementById('wtpBlock'); if (b) b.hidden = false; }
+  function revealWTP() { const b = document.getElementById('wtpBlock'); if (b) { b.hidden = false; b.setAttribute('data-revealed', ''); } }
   document.querySelectorAll('#wtpBlock .wtp-opts button').forEach((b) => {
     b.addEventListener('click', () => {
       const tier = b.getAttribute('data-tier');
