@@ -210,8 +210,8 @@
     font-size: 0.84rem;
     line-height: 1.75;
     color: var(--term-text);
-    overflow-x: auto;
-    min-height: 420px;
+    overflow: auto;
+    height: 470px;            /* fixed from the start — text fills into a stable frame, no page jump */
   }
   .term-body .cmd { color: #fff; }
   .term-body .prompt { color: var(--accent); }
@@ -804,6 +804,23 @@
 
   let storyIndex = 0;
   let runToken = 0;
+  let idleTimer = null;
+  const IDLE_MS = 60000;        // advance only after a full 60s with no interaction
+
+  function armIdleTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      storyIndex = (storyIndex + 1) % stories.length;
+      syncDots();
+      runTerminal();
+    }, IDLE_MS);
+  }
+
+  function syncDots() {
+    document.querySelectorAll('.term-dot-nav').forEach((d, k) => {
+      d.classList.toggle('active', k === storyIndex);
+    });
+  }
 
   function runTerminal() {
     const body = document.getElementById('termBody');
@@ -811,6 +828,7 @@
     const story = stories[storyIndex];
     if (titleEl) titleEl.textContent = story.title;
     const myToken = ++runToken;   // invalidates any in-flight animation from a previous story
+    clearTimeout(idleTimer);      // don't advance mid-typing
     body.innerHTML = '';
     let i = 0;
     function next() {
@@ -819,6 +837,7 @@
         const cur = document.createElement('span');
         cur.className = 'cursor';
         body.appendChild(cur);
+        armIdleTimer();                          // story finished — start the idle clock
         return;
       }
       const el = document.createElement('span');
@@ -832,21 +851,22 @@
     next();
   }
 
+  // manual control: any interaction shows the chosen story and resets the idle clock
   function showStory(idx) {
+    clearTimeout(idleTimer);
     storyIndex = (idx + stories.length) % stories.length;
-    document.querySelectorAll('.term-dot-nav').forEach((d, k) => {
-      d.classList.toggle('active', k === storyIndex);
-    });
-    runTerminal();
+    syncDots();
+    runTerminal();   // re-arms the idle timer when typing completes
   }
 
-  // run terminal when it scrolls into view (once)
+  // run terminal when it scrolls into view (once); pause idle auto-advance when off-screen
   let termStarted = false;
   const termObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      if (e.isIntersecting && !termStarted) {
-        termStarted = true;
-        runTerminal();
+      if (e.isIntersecting) {
+        if (!termStarted) { termStarted = true; runTerminal(); }
+      } else {
+        clearTimeout(idleTimer);   // not on screen — stop cycling
       }
     });
   }, {threshold: 0.3});
