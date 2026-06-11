@@ -107,6 +107,26 @@
     content: ""; width: 26px; height: 1.5px;
     background: var(--accent); display: inline-block;
   }
+  .obd-term {
+    position: relative; cursor: help;
+    border-bottom: 1px dotted var(--accent);
+  }
+  .obd-term .obd-tip {
+    position: absolute; left: 0; top: calc(100% + 10px);
+    width: min(320px, 78vw);
+    background: var(--term-bg); color: var(--term-text);
+    font-family: var(--body); font-size: 0.82rem;
+    letter-spacing: 0; text-transform: none; line-height: 1.5;
+    padding: 12px 14px; border-radius: 8px;
+    box-shadow: 0 14px 30px -12px rgba(20,17,13,0.5);
+    opacity: 0; visibility: hidden; transform: translateY(-4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 5; pointer-events: none;
+  }
+  .obd-term .obd-tip strong { color: #fff; font-weight: 600; }
+  .obd-term:hover .obd-tip, .obd-term:focus .obd-tip {
+    opacity: 1; visibility: visible; transform: translateY(0);
+  }
   h1 {
     font-family: var(--display);
     font-weight: 600;
@@ -119,6 +139,7 @@
   h1 em {
     font-style: italic;
     color: var(--accent);
+    margin-right: 0.12em;
   }
   .lede {
     font-size: clamp(1.08rem, 1.8vw, 1.3rem);
@@ -445,9 +466,9 @@
 </nav>
 
 <header class="hero wrap">
-  <div class="eyebrow">OBD for your server</div>
-  <h1>Your server is talking. <em>DashDiag</em> tells you what it's saying.</h1>
-  <p class="lede">One command runs <strong>70+ collectors</strong> and <strong>400+ checks</strong> across your whole stack, then hands you a <strong>verdict</strong> — not a wall of logs to interpret yourself. Zero agents. No setup. Answers in seconds.</p>
+  <div class="eyebrow"><span class="obd-term" tabindex="0">OBD for your server<span class="obd-tip"><strong>OBD-II</strong> is the port every car has had since the '90s — plug in a reader and it returns fault codes telling you what's actually wrong, instead of you guessing from the dashboard. DashDiag does that for servers.</span></span></div>
+  <h1>Your server has problems you can't see yet. <em>DashDiag</em> finds them.</h1>
+  <p class="lede">One command runs <strong>70+ collectors</strong> and <strong>400+ checks</strong>, then correlates the raw signals into a <strong>verdict</strong> — surfacing root causes and brewing issues you didn't know to look for. Not a wall of logs to read yourself. Zero agents. No setup. Answers in seconds.</p>
   <div class="cta-row">
     <a href="#access" class="btn btn-primary">Get early access →</a>
     <a href="#how" class="btn btn-ghost">See it run</a>
