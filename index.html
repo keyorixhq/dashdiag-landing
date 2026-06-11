@@ -322,6 +322,42 @@
   }
   .us li strong { color: var(--ink); }
 
+  /* ---- blind spots ---- */
+  .blindspots { padding: 70px 0; border-top: 1px solid var(--line); }
+  .bs-grid { display: flex; flex-direction: column; gap: 18px; margin-top: 44px; }
+  .bs-card {
+    border: 1px solid var(--line); border-radius: 10px;
+    background: var(--paper-warm); overflow: hidden;
+    display: grid; grid-template-columns: 1.1fr 1fr;
+  }
+  .bs-left { padding: 28px 30px; }
+  .bs-right {
+    padding: 28px 30px; background: var(--term-bg);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .bs-tag {
+    font-family: var(--mono); font-size: 0.72rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent-deep); margin-bottom: 12px;
+  }
+  .bs-card h3 {
+    font-family: var(--display); font-weight: 600;
+    font-size: 1.3rem; letter-spacing: -0.01em;
+    line-height: 1.2; margin-bottom: 12px; color: var(--ink);
+  }
+  .bs-card p { color: var(--ink-soft); font-size: 0.94rem; }
+  .bs-card p + p { margin-top: 10px; }
+  .bs-card strong { color: var(--ink); font-weight: 600; }
+  .bs-others, .bs-dsd {
+    font-family: var(--mono); font-size: 0.82rem;
+    line-height: 1.6; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .bs-others { color: var(--term-dim); margin-bottom: 14px; }
+  .bs-dsd { color: var(--term-text); }
+  .bs-others .mark { color: #7d756a; flex-shrink: 0; }
+  .bs-dsd .mark { color: #6fcf8e; flex-shrink: 0; font-weight: 700; }
+  .bs-dsd strong { color: #fff; font-weight: 600; }
+
   /* ---- features ---- */
   .features { padding: 70px 0; border-top: 1px solid var(--line); }
   .feat-grid {
@@ -494,6 +530,7 @@
     .nav-links a:not(.nav-cta) { display: none; }
     .compare, .feat-grid { grid-template-columns: 1fr; }
     .trust-grid { grid-template-columns: 1fr; }
+    .bs-card { grid-template-columns: 1fr; }
     .hero { padding: 40px 0 30px; }
     .term-body { font-size: 0.72rem; }
   }
@@ -575,6 +612,55 @@
         <li>Hands you a clear verdict, ranked by severity</li>
       </ul>
     </div>
+  </div>
+</section>
+
+<section class="blindspots wrap">
+  <div class="section-eyebrow">Blind spots</div>
+  <h2 class="section-title">The problems your current tools can't see.</h2>
+  <p class="section-sub">Some failures are invisible not because they're rare, but because of <em>where</em> the system records them. When the architecture moved, most tooling didn't. These are real findings — reproducible on any affected machine.</p>
+
+  <div class="bs-grid">
+
+    <div class="bs-card">
+      <div class="bs-left">
+        <div class="bs-tag">SELinux on hardened RHEL</div>
+        <h3>SELinux denials that never reach your logs</h3>
+        <p>When <strong>auditd</strong> is running — as it is on every hardened RHEL, AlmaLinux or Rocky system — the kernel sends SELinux denials straight to the audit socket, written only to <span style="font-family:var(--mono);font-size:0.9em">/var/log/audit/audit.log</span>. They never reach journald or dmesg.</p>
+        <p>Any tool grepping journald for denials returns <strong>zero</strong> on these systems — not because nothing's wrong, but because it's reading the wrong place.</p>
+      </div>
+      <div class="bs-right">
+        <div class="bs-others"><span class="mark">✗</span><span>journald / dmesg → <strong style="color:var(--term-dim)">0 denials</strong>, looks clean</span></div>
+        <div class="bs-dsd"><span class="mark">✓</span><span>DashDiag reads <strong>audit.log directly</strong> — the same source auditd uses — and surfaces every denial</span></div>
+      </div>
+    </div>
+
+    <div class="bs-card">
+      <div class="bs-left">
+        <div class="bs-tag">Podman quadlets on RHEL 9+</div>
+        <h3>A failed container that <span style="font-style:italic">podman ps</span> can't see</h3>
+        <p>Quadlets — the modern, Red Hat–recommended way to run containers — are managed by <strong>systemd</strong>, not the Podman socket. A <span style="font-family:var(--mono);font-size:0.9em">.container</span> unit that fails to start never appears in <span style="font-family:var(--mono);font-size:0.9em">podman ps</span>, <span style="font-family:var(--mono);font-size:0.9em">podman ps -a</span>, or anything querying the socket.</p>
+        <p>Socket-based monitoring reports a clean host while the container sits there, failed.</p>
+      </div>
+      <div class="bs-right">
+        <div class="bs-others"><span class="mark">✗</span><span>podman ps / socket exporters → <strong style="color:var(--term-dim)">0 containers</strong></span></div>
+        <div class="bs-dsd"><span class="mark">✓</span><span>DashDiag scans <strong>/etc/containers/systemd/</strong> and checks each unit's real systemd state</span></div>
+      </div>
+    </div>
+
+    <div class="bs-card">
+      <div class="bs-left">
+        <div class="bs-tag">CPU saturation</div>
+        <h3>Load average lied. The run-queue didn't.</h3>
+        <p>Load average is a <strong>60-second decaying average</strong> — it lags the short, sharp saturation spikes that make a service stutter and then recover before any alert fires. The number everyone trusts is the one that sleeps through the incident.</p>
+        <p>On a real 8-core host: load average read <strong>0.92</strong> — idle, by any threshold — while the instantaneous run-queue was <strong>24</strong>.</p>
+      </div>
+      <div class="bs-right">
+        <div class="bs-others"><span class="mark">✗</span><span>load avg <strong style="color:var(--term-dim)">0.92</strong> → looks idle, no alert fires</span></div>
+        <div class="bs-dsd"><span class="mark">✓</span><span>DashDiag reads <strong>procs_running from /proc/stat</strong> → 24 runnable on 8 cores, 3× oversubscribed <em>now</em></span></div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -892,7 +978,7 @@
   })();
 
   // --- reveal on scroll ---
-  document.querySelectorAll('.analogy, .contrast, .features, .install, .trust, .signup').forEach(s => {
+  document.querySelectorAll('.analogy, .contrast, .blindspots, .features, .install, .trust, .signup').forEach(s => {
     s.classList.add('reveal');
   });
   const revObserver = new IntersectionObserver((entries) => {
