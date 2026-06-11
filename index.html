@@ -349,6 +349,27 @@
   }
   .install-note a { color: #8fb8d6; }
 
+  /* ---- trust ---- */
+  .trust { padding: 70px 0; border-top: 1px solid var(--line); }
+  .trust-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 22px; margin-top: 40px;
+  }
+  .trust-card {
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 26px; background: var(--paper-warm);
+  }
+  .trust-card h3 {
+    font-family: var(--mono); font-size: 0.78rem;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent-deep); margin-bottom: 12px;
+  }
+  .trust-card p { color: var(--ink-soft); font-size: 0.95rem; }
+  .trust-card p + p { margin-top: 10px; }
+  .trust-card a { color: var(--accent-deep); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--line); }
+  .trust-card a:hover { border-bottom-color: var(--accent); }
+  .trust-card strong { color: var(--ink); font-weight: 600; }
+
   /* ---- signup ---- */
   .signup { padding: 76px 0 86px; border-top: 1px solid var(--line); }
   .signup-card {
@@ -448,6 +469,7 @@
   @media (max-width: 760px) {
     .nav-links a:not(.nav-cta) { display: none; }
     .compare, .feat-grid { grid-template-columns: 1fr; }
+    .trust-grid { grid-template-columns: 1fr; }
     .hero { padding: 40px 0 30px; }
     .term-body { font-size: 0.72rem; }
   }
@@ -581,6 +603,28 @@
   </div>
 </section>
 
+<section class="trust wrap">
+  <div class="section-eyebrow">Why you can trust it</div>
+  <h2 class="section-title">Built by people who've done this at scale.</h2>
+  <div class="trust-grid">
+    <div class="trust-card">
+      <h3>Open source</h3>
+      <p>DashDiag is open source — <strong>read every line before you run it</strong>. No black box on your production hosts; audit it, build it yourself, verify the checksums.</p>
+      <p><a href="https://github.com/keyorixhq/dashdiag" target="_blank" rel="noopener">github.com/keyorixhq/dashdiag →</a></p>
+    </div>
+    <div class="trust-card">
+      <h3>Who's behind it</h3>
+      <p>Built in <strong>Valencia, Spain</strong> by a founder with a <strong>security program manager</strong> background and engineering experience at <strong>Microsoft</strong> and <strong>Tencent</strong>, alongside an ex-Microsoft co-founder.</p>
+      <p>Advised by senior engineers formerly of <strong>Microsoft</strong> and <strong>Nvidia</strong>.</p>
+    </div>
+    <div class="trust-card">
+      <h3>Read-only &amp; proven</h3>
+      <p><strong>It changes nothing</strong> on your system — DashDiag only reads. Safe to run on production.</p>
+      <p>Validated across <a href="https://github.com/keyorixhq/dashdiag/blob/main/docs/PLATFORM_COVERAGE.md" target="_blank" rel="noopener">17 Linux distributions and every major family →</a>, plus macOS.</p>
+    </div>
+  </div>
+</section>
+
 <section class="signup wrap" id="access">
   <div class="signup-card">
     <h2>Use it now. Stay for what's next.</h2>
@@ -678,7 +722,7 @@
   termObserver.observe(document.getElementById('termBody'));
 
   // --- reveal on scroll ---
-  document.querySelectorAll('.analogy, .contrast, .features, .install, .signup').forEach(s => {
+  document.querySelectorAll('.analogy, .contrast, .features, .install, .trust, .signup').forEach(s => {
     s.classList.add('reveal');
   });
   const revObserver = new IntersectionObserver((entries) => {
