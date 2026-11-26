@@ -13,7 +13,7 @@ marketing site?
 
 - Preferred: GitHub private vulnerability reporting on this repository
   ([report here](https://github.com/keyorixhq/dashdiag-landing/security/advisories/new)).
-- Or email **security@dashdiag.sh**.
+- Or email **abeshkov@keyorix.com**.
 
 We acknowledge within 48 hours. We follow coordinated disclosure: fixed
 first, disclosed once a fix ships, with credit unless you prefer otherwise.
