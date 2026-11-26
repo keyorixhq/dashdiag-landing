@@ -30,6 +30,17 @@
   to = "/plans.html"
   status = 200
 
+# Legal notice (Aviso legal) and privacy policy — clean URLs.
+[[redirects]]
+  from = "/legal"
+  to = "/legal.html"
+  status = 200
+
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy.html"
+  status = 200
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
